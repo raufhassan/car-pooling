@@ -7,6 +7,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { IconContext } from 'react-icons';
 import { Button } from 'react-bootstrap';
 import defaultImg from '../../logo.svg';
+
 import './Navbar.css';
 import { SidebarData } from './SidebarData';
 
@@ -67,7 +68,7 @@ export default function Navbar({ setToken, activeTrip, name }) {
                     <div id='logo' data-test="shareMyGaddi-logo">
                         <AiIcons.AiFillCar />
                         <Link to='/' className='menu-bars nav-text'>
-                            ShareMyGaddi
+                            CarPooling App
                         </Link>
                     </div>
 
@@ -75,17 +76,17 @@ export default function Navbar({ setToken, activeTrip, name }) {
                         <div className={'main-buttons'}>
                             {/* <div id='main-buttons'> */}
                             <Link to='/active-trip'>
-                                <Button variant='warning' className={activeTrip ? 'main-button' : 'hidden'} disabled={'/active-trip' === location.pathname} data-test="activeTrip-button">
+                                <Button variant='primary' className={activeTrip ? 'main-button' : 'hidden'} disabled={'/active-trip' === location.pathname} data-test="activeTrip-button">
                                     <AiIcons.AiOutlineCar style={{ color: 'black', marginBottom: '0.1rem', marginRight: '0.3rem' }} data-test='activeTrip-icon' /> Active Trip
                                 </Button>
                             </Link>
                             <Link to='/drive'>
-                                <Button variant='warning' className={activeTrip ? 'hidden' : 'main-button'} disabled={'/drive' === location.pathname} data-test="drive-button">
+                                <Button variant='primary' className={activeTrip ? 'hidden' : 'main-button'} disabled={'/drive' === location.pathname} data-test="drive-button">
                                     <AiIcons.AiTwotoneCar style={{ color: 'black', marginBottom: '0.1rem', marginRight: '0.3rem' }} data-test='drive-icon' /> Drive
                                 </Button>
                             </Link>
                             <Link to='/ride'>
-                                <Button variant='warning' className={activeTrip ? 'hidden' : 'main-button'} disabled={'/ride' === location.pathname} data-test="ride-button">
+                                <Button variant='primary' className={activeTrip ? 'hidden' : 'main-button'} disabled={'/ride' === location.pathname} data-test="ride-button">
                                     <MdIcons.MdPeopleOutline style={{ color: 'black', marginRight: '0.3rem' }} data-test='ride-icon' /> Ride
                                 </Button>
                             </Link>
@@ -104,7 +105,9 @@ export default function Navbar({ setToken, activeTrip, name }) {
                             </li>
                             <li>
                                 {/* <img src={props.user.img} alt={props.user.name} /> */}
-                                <img src={defaultImg} alt='Name' data-test="name-image" />
+                                {/* <img src={defaultImg} alt='Name' data-test="name-image" /> */}
+                                <img src="https://cdn-icons-png.flaticon.com/512/1177/1177568.png" className='p-2 mx-5' alt='Name' data-test="name-image" width='180px'/>
+
                             </li>
                             <li style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
                                 <div style={{ color: 'white' }}>{name}</div>

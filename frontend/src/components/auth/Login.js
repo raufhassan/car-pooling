@@ -54,7 +54,7 @@ export default function Login({ setToken, setActiveTrip }) {
 
     return (
         <div className="login-container">
-            <div className="login-content">
+            <div className="login-content border bg-dark text-white">
                 <Form onSubmit={handleSubmit} data-test="login-form">
                     <h3 className="heading-text">Login</h3>
                     <Form.Group size="lg" controlId="email" className="form-group">

@@ -58,7 +58,7 @@ export default function SignUp({ setToken }) {
 
   return (
     <div className="signup-container">
-      <div className="signup-content">
+      <div className="signup-content border bg-dark text-white">
         <Form onSubmit={handleSubmit}>
           <h3 className="heading-text">Sign Up</h3>
 
