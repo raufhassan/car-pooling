@@ -65,7 +65,7 @@ export default function Navbar({ setToken, activeTrip, name }) {
                             <FaIcons.FaBars onClick={showSidebar} />
                         </Link> : null}
 
-                    <div id='logo' data-test="shareMyGaddi-logo">
+                    <div id='logo' data-test="CarPooling-logo">
                         <AiIcons.AiFillCar />
                         <Link to='/' className='menu-bars nav-text'>
                             CarPooling App

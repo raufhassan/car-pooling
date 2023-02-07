@@ -25,8 +25,8 @@ describe("navbar", () => {
         expect(im.length).toBe(1);
      });
 
-     it("render ShareMyGaddi logo", () => {
-        const im= wrapper.find(`[data-test='shareMyGaddi-logo']`);
+     it("render CarPooling logo", () => {
+        const im= wrapper.find(`[data-test='CarPooling-logo']`);
         expect(im.length).toBe(1);
      });
 
