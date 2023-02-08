@@ -68,7 +68,7 @@ export default function Navbar({ setToken, activeTrip, name }) {
                     <div id='logo' data-test="CarPooling-logo">
                         <AiIcons.AiFillCar />
                         <Link to='/' className='menu-bars nav-text'>
-                            CarPooling App
+                            BCarUP
                         </Link>
                     </div>
 
