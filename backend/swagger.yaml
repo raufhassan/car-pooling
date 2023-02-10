@@ -1,7 +1,9 @@
 openapi: 3.0.0
 info:
-  title: BCarUP
-  description: BCarUP ApI
+  # title: BCarUP
+  # description: BCarUP ApI
+  title: DoCarpool
+  description: DoCarpool ApI
   version: 1.0.0
 servers:
   - url: http://localhost:8000
