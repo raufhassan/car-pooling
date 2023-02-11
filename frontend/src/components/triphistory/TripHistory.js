@@ -1,4 +1,4 @@
-import { React, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Row, Col } from 'react-bootstrap'
 import * as GrIcons from 'react-icons/gr'
 import sourceImg from '../../start-location.svg';
@@ -8,8 +8,10 @@ import groupImg from '../../group.svg';
 import './TripHistory.css';
 import Cookies from 'js-cookie';
 import Geocode from "react-geocode";
+import Header from '../header';
 
 export default function TripHistory() {
+    const [loading , setLoading]= useState(false);
     const getLocFromCoords = async (coords) => {
         let lat = coords['lat']
         let long = coords['lng']
@@ -29,6 +31,7 @@ export default function TripHistory() {
 
     const [tripDetails, setTripDetails] = useState([])
     const fetchData = async () => {
+        setLoading(true);
         const response = await fetch(process.env.REACT_APP_END_POINT + '/trip/history', {
             method: 'GET',
             headers: {
@@ -54,6 +57,7 @@ export default function TripHistory() {
             tempArray.push(newTrip)
         }
         setTripDetails(tempArray)
+        setLoading(false);
     }
 
     useEffect(() => {
@@ -107,9 +111,11 @@ export default function TripHistory() {
         </div>
 
     );
+   
     return (
         <>
-            {tripDetails.length === 0 ? <h1 style={{ width: '100%', height: '100%', textAlign: 'center', marginTop:'30vh' }}>No trips found</h1> :
+        <Header image={'history'}/> 
+            {tripDetails.length === 0 ? <h1 style={{ width: '100%', height: '100%', textAlign: 'center', marginTop:'50px' }}>{loading? `Loading ...` :`No trips found`}</h1> :
                 tripDetails.map((data, index) => {
                     return (
                         <CardView key={index} {...data} />

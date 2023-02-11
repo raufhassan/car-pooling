@@ -245,7 +245,7 @@ export default function ActiveTrip({ setActiveTrip }) {
                             <h3><span className='trip-attributes'>Destination</span>: {destination}</h3>
                             <h3><span className='trip-attributes'>Date</span>: {datetime}</h3>
                             <h3 style={{ marginTop: '1rem' }}><span className='trip-attributes'>Driver</span>: {driver}</h3>
-                            <h3><span className='trip-attributes'>Rider(s)</span>: {riders}</h3>
+                            <h3><span className='trip-attributes'>Rider(s)</span>: {riders || ''}</h3>
                         </Row>
                     </Col>
                     <Col md="2">

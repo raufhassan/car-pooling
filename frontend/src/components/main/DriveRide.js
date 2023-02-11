@@ -7,6 +7,7 @@ import './DriveRide.css';
 import "react-datepicker/dist/react-datepicker.css";
 import Cookies from 'js-cookie';
 import Geocode from "react-geocode";
+import Header from '../header'
 
 Geocode.setApiKey(process.env.REACT_APP_MAPS_API_KEY);
 
@@ -135,7 +136,7 @@ export default function DriveRide({ type, setToken, setActiveTrip }) {
             .catch((error) => {
                 console.log(error);
                 alert(error);
-                window.location.reload();
+                // window.location.reload();
             });
     }
 
@@ -188,6 +189,7 @@ export default function DriveRide({ type, setToken, setActiveTrip }) {
     return (
         <>
             {/* <div style={{ width: '100%', height: '100%', textAlign: 'center' }}> */}
+            <Header image={type === 'drive'? 'driver': 'rider'}/>
             <Container fluid="lg">
                 <Row style={{ marginTop: '3rem' }}>
                     <Col md>
