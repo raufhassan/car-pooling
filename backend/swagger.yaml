@@ -79,6 +79,10 @@ paths:
                       type: string
                     phone_number:
                       type: number
+                    cnic:
+                      type: string
+                    license:
+                      type: string
                     password:
                       type: string
                     user_photo:

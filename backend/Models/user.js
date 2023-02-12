@@ -28,6 +28,14 @@ const userSchema = new schema({
         type: Number,
         trim: true,
     },
+    cnic: {
+        type: String,
+        trim: true,
+    },
+    license: {
+        type: String,
+        trim: true,
+    },
     encry_password: {
         type: String,
         require: true,
