@@ -11,6 +11,9 @@ export default function SignUp({ setToken }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmpassword, setconfirmPassword] = useState("");
+  const [cnic, setCnic] = useState("");
+  const [license, setLicense] = useState("");
+  const [phone, setPhone] = useState("");
 
   function signupUser(userDetails) {
     return fetch(process.env.REACT_APP_END_POINT + '/signup', {
@@ -41,7 +44,10 @@ export default function SignUp({ setToken }) {
       lastname,
       email,
       password,
-      confirmpassword
+      phone_number: Number(phone),
+      confirmpassword,
+      cnic,
+      license
     }
     const sessionUserDetails = await signupUser(data);
     if (sessionUserDetails && sessionUserDetails.token) {
@@ -51,8 +57,8 @@ export default function SignUp({ setToken }) {
   }
 
   function validateForm() {
-    return email.length > 0 && password.length > 0 &&
-      name.length > 0 && lastname.length > 0 &&
+    return email && password && license && phone &&
+      name && lastname && cnic &&
       password === confirmpassword
   }
 
@@ -62,7 +68,7 @@ export default function SignUp({ setToken }) {
         <Form onSubmit={handleSubmit}>
           <h3 className="heading-text">Sign Up</h3>
 
-          <Form.Group size="lg" controlId="name">
+          <Form.Group size="lg" className="field" controlId="name">
             <Form.Label>First Name</Form.Label>
             <Form.Control
               autoFocus
@@ -73,7 +79,7 @@ export default function SignUp({ setToken }) {
             />
           </Form.Group>
 
-          <Form.Group size="lg" controlId="lastname">
+          <Form.Group size="lg" className="field" controlId="lastname">
             <Form.Label>Last Name</Form.Label>
             <Form.Control
               autoFocus
@@ -84,7 +90,7 @@ export default function SignUp({ setToken }) {
             />
           </Form.Group>
 
-          <Form.Group size="lg" controlId="email">
+          <Form.Group size="lg" className="field" controlId="email">
             <Form.Label>Email</Form.Label>
             <Form.Control
               autoFocus
@@ -94,7 +100,39 @@ export default function SignUp({ setToken }) {
               onChange={(e) => setEmail(e.target.value)}
             />
           </Form.Group>
-          <Form.Group size="lg" controlId="password">
+
+          <Form.Group size="lg" className="field" controlId="cnic">
+            <Form.Label>CNIC</Form.Label>
+            <Form.Control
+              autoFocus
+              data-test="cnic-form-control"
+              type="text"
+              value={cnic}
+              onChange={(e) => setCnic(e.target.value)}
+            />
+          </Form.Group>
+          <Form.Group size="lg" className="field" controlId="license">
+            <Form.Label>License</Form.Label>
+            <Form.Control
+              autoFocus
+              data-test="license-form-control"
+              type="text"
+              value={license}
+              onChange={(e) => setLicense(e.target.value)}
+            />
+          </Form.Group>
+          <Form.Group size="lg" className="field" controlId="phone">
+            <Form.Label>Phone</Form.Label>
+            <Form.Control
+              placeholder="e.g. 03431785643"
+              autoFocus
+              data-test="phone-form-control"
+              type="number"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+            />
+          </Form.Group>
+          <Form.Group size="lg" className="field" controlId="password">
             <Form.Label>Password</Form.Label>
             <Form.Control
               data-test="password-form-control"
@@ -104,7 +142,7 @@ export default function SignUp({ setToken }) {
             />
           </Form.Group>
 
-          <Form.Group size="lg" controlId="confirmpassword">
+          <Form.Group size="lg" className="field" controlId="confirmpassword">
             <Form.Label>Confirm Password </Form.Label>
             <Form.Control
               autoFocus
