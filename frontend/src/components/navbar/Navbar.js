@@ -69,7 +69,7 @@ export default function Navbar({ setToken, activeTrip, name }) {
                         <AiIcons.AiFillCar />
                         <Link to='/' className='menu-bars nav-text'>
                             {/* BCarUP */}
-                            DoCarpool
+                            TripBuddy
                         </Link>
                     </div>
 
