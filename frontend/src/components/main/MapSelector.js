@@ -98,7 +98,7 @@ export default function MapSelector(props) {
           <Autocomplete
             onLoad={onAutoCompleteLoad}
             onPlaceChanged={onPlaceChanged}
-            restrictions={{ country: ['ca', 'us'] }}
+            // restrictions={{ country: ['ca', 'us'] }}
           >
             <input
               type="text"
