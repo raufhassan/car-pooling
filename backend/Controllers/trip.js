@@ -29,7 +29,7 @@ exports.activeTrip = (req, res) => {
                     res.status(200).json({
                         ...trip._doc,
                         riders: riderArray,
-                        driver: user_driver.name + ' ' + user_driver.lastname
+                        driver: user_driver
                     })
                 }
               
@@ -45,7 +45,7 @@ exports.activeTrip = (req, res) => {
                             return res.status(200).json({
                                 ...trip._doc,
                                 riders: riderArray,
-                                driver: user_driver.name + ' ' + user_driver.lastname
+                                driver: user_driver
                             })
                         }
                     })
@@ -114,6 +114,7 @@ exports.ride = (req, res) => {
                     return res.status(400).end();
                 }
                 var trip;
+                var tripsArr = [];
                 trips.forEach(tempTrip => {
                     const pctLen = parseInt(tempTrip.route.length * pct)
                     let found = PolyUtil.isLocationOnPath(
@@ -121,20 +122,24 @@ exports.ride = (req, res) => {
                         tempTrip.route.slice(0, pctLen),
                         radiusOffset
                     );
+
                     if (found) {
                         found = PolyUtil.isLocationOnPath(
                             req.body.dst,
                             tempTrip.route.slice(pctLen),
                             radiusOffset
                         );
+                        console.log("found trips",found);
                         if (found) {
-                            trip = tempTrip;
-                            return;
+                            tripsArr.push(tempTrip)
+                            // trip = tempTrip;
+                            // return;
                         }
                     }
                 });
+                console.log(tripsArr);
                 //Matching logic END
-                if (trip == undefined || trip == null) {
+             /*    if (trip == undefined || trip == null) {
                     res.statusMessage = "No match found";
                     return res.status(400).end();
                 }
@@ -173,7 +178,7 @@ exports.ride = (req, res) => {
                             })
                             return res.status(500).end();
                         });
-                    })
+                    }) */
                     // .catch((e) => {
                     //     res.statusMessage = e.response.data.error_message;
                     //     return res.status(400).end();

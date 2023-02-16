@@ -154,12 +154,11 @@ export default function ActiveTrip({ setActiveTrip }) {
             alert(error);
         });
     }
-
     // Active Trip details
     const [source, setsource] = useState("")
     const [destination, setdestination] = useState("")
     const [datetime, setdatetime] = useState("")
-    const [driver, setdriver] = useState("")
+    const [driver, setdriver] = useState(null)
     const [riders, setriders] = useState("")
 
     useEffect(() => {
@@ -182,14 +181,19 @@ export default function ActiveTrip({ setActiveTrip }) {
             getLocFromCoords(responseJson.destination, 'dest')
             let all_riders = responseJson.riders
             var temp_riders = ""
-            for (let i = 0; i < all_riders.length - 1; i++) {
-                temp_riders += all_riders[i] + ', '
+            if(all_riders?.length){
+                all_riders.forEach(item => {
+                    temp_riders += item + ', '
+                })
             }
-            temp_riders += all_riders[all_riders.length - 1]
+            // for (let i = 0; i < all_riders.length - 1; i++) {
+            //     temp_riders += all_riders[i] + ', '
+            // }
+            // temp_riders += all_riders[all_riders.length - 1]
             if (temp_riders === "") {
                 temp_riders = "No rider currently"
             }
-            setriders(temp_riders)
+            setriders(temp_riders);
 
             // Set Map Coords
             mapCoords['src'] = responseJson.source
@@ -244,9 +248,9 @@ export default function ActiveTrip({ setActiveTrip }) {
                             <h3 style={{ marginTop: '1rem' }}><span className='trip-attributes'>Source</span>: {source}</h3>
                             <h3><span className='trip-attributes'>Destination</span>: {destination}</h3>
                             <h3><span className='trip-attributes'>Date</span>: {datetime}</h3>
-                            <h3 style={{ marginTop: '1rem' }}><span className='trip-attributes'>Driver</span>: {driver}</h3>
+                            <h3 style={{ marginTop: '1rem' }}><span className='trip-attributes'>Driver</span>: {driver?.name}</h3>
                             <h3><span className='trip-attributes'>Rider(s)</span>: {riders || ''}</h3>
-                            <h3><span className='trip-attributes'>Driver's phone</span>: </h3>
+                            <h3><span className='trip-attributes'>Driver's phone</span>: 0{driver?.phone_number}</h3>
                         </Row>
                     </Col>
                     <Col md="2">
