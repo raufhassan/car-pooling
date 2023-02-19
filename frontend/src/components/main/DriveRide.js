@@ -8,6 +8,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import Cookies from 'js-cookie';
 import Geocode from "react-geocode";
 import Header from '../header'
+import TripModal from '../modal/trips';
 
 Geocode.setApiKey(process.env.REACT_APP_MAPS_API_KEY);
 
@@ -26,6 +27,8 @@ const center = {
 
 export default function DriveRide({ type, setToken, setActiveTrip }) {
     const [showModal, setShowModal] = useState(false);
+    const [showTripModal, setShowTripModal] = useState(false);
+    const [matchedTrips, setMatchedTrips] = useState([]);
     const [modalTitle, setModalTitle] = useState('Title Error');
     const [mapType, setMapType] = useState();
     const [mapCoords, setMapCoords] = useState({
@@ -111,7 +114,7 @@ export default function DriveRide({ type, setToken, setActiveTrip }) {
             dateTime: dateTime,
             max_riders: riders
         }
-        console.log(data);
+      
         return fetch(process.env.REACT_APP_END_POINT + '/trip/drive', {
             method: 'POST',
             headers: {
@@ -136,7 +139,7 @@ export default function DriveRide({ type, setToken, setActiveTrip }) {
             .catch((error) => {
                 console.log(error);
                 alert(error);
-                // window.location.reload();
+                window.location.reload();
             });
     }
 
@@ -171,9 +174,10 @@ export default function DriveRide({ type, setToken, setActiveTrip }) {
                 throw new Error(response.statusText);
             })
             .then((responseJson) => {
-                console.log(responseJson);
-                setActiveTrip(responseJson._id);
-                window.location.reload();
+                setMatchedTrips(responseJson);
+                setShowTripModal(true);
+                // setActiveTrip(responseJson._id);
+                // window.location.reload();
             })
             .catch((error) => {
                 console.log(error);
@@ -187,126 +191,173 @@ export default function DriveRide({ type, setToken, setActiveTrip }) {
     }, [mapCoords]);
 
     return (
-        <>
-            {/* <div style={{ width: '100%', height: '100%', textAlign: 'center' }}> */}
-            <Header image={type === 'drive'? 'driver': 'rider'}/>
-            <Container fluid="lg">
-                <Row style={{ marginTop: '3rem' }}>
-                    <Col md>
-                        <Form>
-                            <Form.Group as={Row} className="mb-3" controlId="src">
-                                <Col xs="9">
-                                    <Form.Control readOnly defaultValue="Source not selected" value={mapCoords['src'] ? srcName : null} />
-                                </Col>
-                                <Col xs="3">
-                                    <Button variant="primary" onClick={() => openMapModal('src')} style={{ width: '100%' }} data-test="source-button">
-                                        Source
-                                    </Button>
-                                </Col>
-                            </Form.Group>
-                            <Form.Group as={Row} className="mb-3" controlId="dst">
-                                <Col xs="9">
-                                    <Form.Control readOnly defaultValue="Destination not selected" value={mapCoords['dst'] ? destName : null} />
-                                </Col>
-                                <Col xs="3">
-                                    <Button variant="primary" onClick={() => openMapModal('dst')} style={{ width: '100%' }} data-test="destination-button">
-                                        Destination
-                                    </Button>
-                                </Col>
-                            </Form.Group>
-                            <Row style={{ marginTop: '1rem' }}>
-                                <Col xs="6" sm="3" md="4">
-                                    <label>Date-Time of trip: </label>
-                                </Col>
-                                <Col xs="6">
-                                    <DatePicker
-                                        showTimeSelect
-                                        selected={dateTime}
-                                        minDate={new Date()}
-                                        closeOnScroll={true}
-                                        onChange={(date) => setDateTime(date)}
-                                        dateFormat="MMMM d @ h:mm aa" />
-                                </Col>
-                            </Row>
-                            {
-                                type === 'drive' ?
-                                    <Row style={{ marginTop: '1rem' }}>
-                                        <Col sm="7" md="12" xl="8">
-                                            <FloatingLabel controlId="ridingWith" label="Select number of people can ride with">
-                                                <Form.Select onChange={e => { setRiders(e.target.value) }}>
-                                                    <option>----- Select -----</option>
-                                                    <option value="1">One</option>
-                                                    <option value="2">Two</option>
-                                                    <option value="3">Three</option>
-                                                </Form.Select>
-                                            </FloatingLabel>
-                                        </Col>
-                                    </Row>
-                                    : null
-                            }
-                            <Row className='justify-content-center'>
-                                <Col className='col-auto'>
-                                    {
-                                        type === 'drive' ?
-                                            <Button variant="primary" type="submit" data-test="drive-submit-button" style={{ marginTop: '3rem' }} onClick={handleDriveSubmit}>
-                                                Ready to drive!
-                                            </Button> :
-                                            <Button variant="primary" type="submit" data-test="ride-submit-button" style={{ marginTop: '3rem' }} onClick={handleRideSubmit}>
-                                                Ready to ride!
-                                            </Button>
-                                    }
-                                </Col>
-                            </Row>
-                        </Form>
-                    </Col>
-                    <Col md style={{ marginTop: '2rem' }}>
-                        <GoogleMap
-                            mapContainerStyle={mapContainerStyle}
-                            zoom={15}
-                            center={center}
-                            options={options}
-                            onLoad={onMapLoad}
-                        >
-                            {
-                                (routeResp == null &&
-                                    mapCoords['src'] != null && mapCoords['dst'] != null) && (
-                                    <DirectionsService
-                                        // required
-                                        options={{
-                                            destination: mapCoords['dst'],
-                                            origin: mapCoords['src'],
-                                            travelMode: 'DRIVING',
-                                            drivingOptions: {
-                                                departureTime: dateTime
-                                            }
-                                        }}
-                                        // required
-                                        callback={directionsCallback}
-                                    />
-                                )
-                            }
-
-                            {
-                                routeResp !== null && (
-                                    <DirectionsRenderer
-                                        // required
-                                        options={{
-                                            directions: routeResp
-                                        }}
-                                    />
-                                )
-                            }
-                        </GoogleMap>
-                    </Col>
+      <>
+        {/* <div style={{ width: '100%', height: '100%', textAlign: 'center' }}> */}
+        <Header image={type === "drive" ? "driver" : "rider"} />
+        <Container fluid="lg">
+          <Row style={{ marginTop: "3rem" }}>
+            <Col md>
+              <Form>
+                <Form.Group as={Row} className="mb-3" controlId="src">
+                  <Col xs="9">
+                    <Form.Control
+                      readOnly
+                      defaultValue="Source not selected"
+                      value={mapCoords["src"] ? srcName : null}
+                    />
+                  </Col>
+                  <Col xs="3">
+                    <Button
+                      variant="primary"
+                      onClick={() => openMapModal("src")}
+                      style={{ width: "100%" }}
+                      data-test="source-button"
+                    >
+                      Source
+                    </Button>
+                  </Col>
+                </Form.Group>
+                <Form.Group as={Row} className="mb-3" controlId="dst">
+                  <Col xs="9">
+                    <Form.Control
+                      readOnly
+                      defaultValue="Destination not selected"
+                      value={mapCoords["dst"] ? destName : null}
+                    />
+                  </Col>
+                  <Col xs="3">
+                    <Button
+                      variant="primary"
+                      onClick={() => openMapModal("dst")}
+                      style={{ width: "100%" }}
+                      data-test="destination-button"
+                    >
+                      Destination
+                    </Button>
+                  </Col>
+                </Form.Group>
+                <Row style={{ marginTop: "1rem" }}>
+                  <Col xs="6" sm="3" md="4">
+                    <label>Date-Time of trip: </label>
+                  </Col>
+                  <Col xs="6">
+                    <DatePicker
+                      showTimeSelect
+                      selected={dateTime}
+                      minDate={new Date()}
+                      closeOnScroll={true}
+                      onChange={(date) => setDateTime(date)}
+                      dateFormat="MMMM d @ h:mm aa"
+                    />
+                  </Col>
                 </Row>
-            </Container>
-            <MapSelector
-                showModal={showModal}
-                mapType={mapType}
-                modalTitle={modalTitle}
-                mapCoords={mapCoords}
-                handleCallback={handleCallback}
-            />
-        </>
+                {type === "drive" ? (
+                  <Row style={{ marginTop: "1rem" }}>
+                    <Col sm="7" md="12" xl="8">
+                      <FloatingLabel
+                        controlId="ridingWith"
+                        label="Select number of people can ride with"
+                      >
+                        <Form.Select
+                          onChange={(e) => {
+                            setRiders(e.target.value);
+                          }}
+                        >
+                          <option>----- Select -----</option>
+                          <option value="1">One</option>
+                          <option value="2">Two</option>
+                          <option value="3">Three</option>
+                        </Form.Select>
+                      </FloatingLabel>
+                    </Col>
+                  </Row>
+                ) : null}
+                <Row className="justify-content-center">
+                  <Col className="col-auto">
+                    {type === "drive" ? (
+                      <Button
+                        variant="primary"
+                        type="submit"
+                        data-test="drive-submit-button"
+                        style={{ marginTop: "3rem" }}
+                        onClick={handleDriveSubmit}
+                      >
+                        Ready to drive!
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="primary"
+                        type="submit"
+                        data-test="ride-submit-button"
+                        style={{ marginTop: "3rem" }}
+                        onClick={handleRideSubmit}
+                      >
+                        Ready to ride!
+                      </Button>
+                    )}
+                  </Col>
+                </Row>
+              </Form>
+            </Col>
+            <Col md style={{ marginTop: "2rem" }}>
+              <GoogleMap
+                mapContainerStyle={mapContainerStyle}
+                zoom={15}
+                center={center}
+                options={options}
+                onLoad={onMapLoad}
+              >
+                {routeResp == null &&
+                  mapCoords["src"] != null &&
+                  mapCoords["dst"] != null && (
+                    <DirectionsService
+                      // required
+                      options={{
+                        destination: mapCoords["dst"],
+                        origin: mapCoords["src"],
+                        travelMode: "DRIVING",
+                        drivingOptions: {
+                          departureTime: dateTime,
+                        },
+                      }}
+                      // required
+                      callback={directionsCallback}
+                    />
+                  )}
+
+                {routeResp !== null && (
+                  <DirectionsRenderer
+                    // required
+                    options={{
+                      directions: routeResp,
+                    }}
+                  />
+                )}
+              </GoogleMap>
+            </Col>
+          </Row>
+        </Container>
+        <MapSelector
+          showModal={showModal}
+          mapType={mapType}
+          modalTitle={modalTitle}
+          mapCoords={mapCoords}
+          handleCallback={handleCallback}
+        />
+        {mapCoords?.dst && mapCoords.src ? <TripModal
+          src={{
+            lat: mapCoords.src.lat,
+            lng: mapCoords.src.lng,
+          }}
+          dst={{
+            lat: mapCoords.dst.lat,
+            lng: mapCoords.dst.lng,
+          }}
+          setActiveTrip={setActiveTrip}
+          show={showTripModal}
+          setShow={setShowTripModal}
+          trips={matchedTrips}
+        />: null}
+      </>
     );
 }

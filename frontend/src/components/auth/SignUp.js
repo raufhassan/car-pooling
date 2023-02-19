@@ -14,6 +14,7 @@ export default function SignUp({ setToken }) {
   const [cnic, setCnic] = useState("");
   const [license, setLicense] = useState("");
   const [phone, setPhone] = useState("");
+  const [gender, setGender] = useState("Male");
 
   function signupUser(userDetails) {
     return fetch(process.env.REACT_APP_END_POINT + '/signup', {
@@ -47,7 +48,8 @@ export default function SignUp({ setToken }) {
       phone_number: Number(phone),
       confirmpassword,
       cnic,
-      license
+      license,
+      gender
     }
     const sessionUserDetails = await signupUser(data);
     if (sessionUserDetails && sessionUserDetails.token) {
@@ -152,11 +154,40 @@ export default function SignUp({ setToken }) {
               onChange={(e) => setconfirmPassword(e.target.value)}
             />
           </Form.Group>
-          <Button size="lg" type="submit" disabled={!validateForm()} className="signup-button" data-test="signup-button">
+
+          <Form.Group
+            size="lg"
+            className="field d-flex"
+            controlId="confirmpassword"
+          >
+            <Form.Label className="me-2">Gender: </Form.Label>
+            <Form.Check
+              checked={gender === "Male"}
+              onClick={(e) => setGender("Male")}
+              className="me-2"
+              label="Male"
+              type="radio"
+            />
+            <Form.Check
+              checked={gender === "Female"}
+              onClick={(e) => setGender("Female")}
+              label="Female"
+              type="radio"
+            />
+          </Form.Group>
+          <Button
+            size="lg"
+            type="submit"
+            disabled={!validateForm()}
+            className="signup-button"
+            data-test="signup-button"
+          >
             Sign Up
           </Button>
         </Form>
-        <Link to='/login' className="login-link">Login</Link>
+        <Link to="/login" className="login-link">
+          Login
+        </Link>
       </div>
     </div>
   );
