@@ -2,8 +2,9 @@ const mongoose = require("mongoose");
 const schema = mongoose.Schema;
 const tripSchema = new schema({
     driver: {
-        type: mongoose.ObjectId,
-        require: true,
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'user'
     },    
     source: {
         type: Object,
@@ -33,7 +34,7 @@ const tripSchema = new schema({
         default: true
     },
     riders: {
-        type: Array,
+        type: [{ type: schema.Types.ObjectId, ref: "user" }],
         default: []
     },
     completed: {    // false: active
