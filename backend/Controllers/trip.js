@@ -108,7 +108,8 @@ exports.ride = (req, res) => {
                     $gte: startDateTime,
                     $lte: endDateTime
                 },
-            }, function (err, trips) {
+            }, async function (err, trips) {
+                console.log(err);
                 if (err) {
                     res.statusMessage = "No matches found. No trips around your time.";
                     return res.status(400).end();
@@ -137,7 +138,9 @@ exports.ride = (req, res) => {
                         }
                     }
                 });
-                console.log(tripsArr);
+                // console.log(tripsArr);
+                res.status(200).json(tripsArr);
+
                 //Matching logic END
              /*    if (trip == undefined || trip == null) {
                     res.statusMessage = "No match found";
@@ -183,13 +186,75 @@ exports.ride = (req, res) => {
                     //     res.statusMessage = e.response.data.error_message;
                     //     return res.status(400).end();
                     // });
-            });
+            }).populate('driver').populate('riders')
         } else {
             res.statusMessage = "A trip is already active";
             return res.status(400).end();
         }
     })
 }
+
+exports.acceptRide = (req, res) => {
+  User.findById(req.auth._id, async (err, user) => {
+    if (user.active_trip) {
+      res.statusMessage = "A trip is already active";
+      return res.status(400).end();
+    } else {
+        console.log("myid", req.body.id);
+       const trip = await Trip.findById(req.body.id);
+
+      if (trip == undefined || trip == null) {
+        res.statusMessage = "No match found";
+        return res.status(400).end();
+      }
+      trip.waypoints = [...trip.waypoints, req.body.src, req.body.dst];
+      mapsClient
+        .directions({
+          params: {
+            origin: trip.source,
+            destination: trip.destination,
+            waypoints: trip.waypoints,
+            drivingOptions: {
+              departureTime: new Date(trip.dateTime), // for the time N milliseconds from now.
+            },
+            optimize: true,
+            key: process.env.MAPS_API_KEY,
+          },
+          timeout: 2000, // milliseconds
+        })
+        .then((r) => {
+          const routeArray = polylineUtil.decode(
+            r.data.routes[0].overview_polyline.points
+          );
+          trip.route = Object.values(routeArray).map((item) => ({
+            lat: item[0],
+            lng: item[1],
+          }));
+          trip.riders.push(user._id);
+          trip.available_riders = !(trip.riders.length === trip.max_riders);
+          trip.save((err, trip) => {
+            // if (err)
+            //     return res.status(500).end();
+            res.status(200).json(trip);
+            user.active_trip = trip._id;
+            user.trip_role_driver = false;
+            user.save((err) => {
+              // if (err) {
+              //     //TODO: revert
+              //     return res.status(500).end();
+              // }
+              return res;
+            });
+            return res.status(500).end();
+          });
+        });
+      // .catch((e) => {
+      //     res.statusMessage = e.response.data.error_message;
+      //     return res.status(400).end();
+      // });
+    }
+  });
+};
 
 exports.cancelTrip = (req, res) => {
     User.findById(req.auth._id, (err, user) => {
