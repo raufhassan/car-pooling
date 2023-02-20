@@ -41,6 +41,14 @@ const tripSchema = new schema({
         type: Boolean,
         default: false
     },
+    car: {
+        type: String,
+        required: true,
+    },
+    vehicle_no: {
+        type: String,
+        required: true,
+    }
 }, { timestamps: true });
 
 module.exports = mongoose.model("trip", tripSchema)
