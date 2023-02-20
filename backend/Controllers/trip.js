@@ -29,7 +29,7 @@ exports.activeTrip = (req, res) => {
                     res.status(200).json({
                         ...trip._doc,
                         riders: riderArray,
-                        driver: user_driver.name + ' ' + user_driver.lastname
+                        driver: user_driver
                     })
                 }
               
@@ -39,13 +39,13 @@ exports.activeTrip = (req, res) => {
 
                         if (err)
                             return res.status(500).end();
-                        riderArray.push(String(user_rider.name + ' ' + user_rider.lastname));
+                        riderArray.push(String(user_rider.name + ' ' + user_rider.lastname + ' ' + `(${user_rider.gender})` ));
                         i++;
                         if (i == riders.length) {
                             return res.status(200).json({
                                 ...trip._doc,
                                 riders: riderArray,
-                                driver: user_driver.name + ' ' + user_driver.lastname
+                                driver: user_driver
                             })
                         }
                     })
@@ -67,6 +67,8 @@ exports.drive = (req, res) => {
                 route: req.body.route,
                 dateTime: new Date(req.body.dateTime),
                 max_riders: req.body.max_riders,
+                car: req.body?.car,
+                vehicle_no: req.body?.vehicle_no
             });
             tripObj.save((err, trip) => {
                 if (err) // TODO: ?Handle error coming due to not selecting all the required fields?
@@ -108,12 +110,14 @@ exports.ride = (req, res) => {
                     $gte: startDateTime,
                     $lte: endDateTime
                 },
-            }, function (err, trips) {
+            }, async function (err, trips) {
+                console.log(err);
                 if (err) {
                     res.statusMessage = "No matches found. No trips around your time.";
                     return res.status(400).end();
                 }
                 var trip;
+                var tripsArr = [];
                 trips.forEach(tempTrip => {
                     const pctLen = parseInt(tempTrip.route.length * pct)
                     let found = PolyUtil.isLocationOnPath(
@@ -121,20 +125,26 @@ exports.ride = (req, res) => {
                         tempTrip.route.slice(0, pctLen),
                         radiusOffset
                     );
+
                     if (found) {
                         found = PolyUtil.isLocationOnPath(
                             req.body.dst,
                             tempTrip.route.slice(pctLen),
                             radiusOffset
                         );
+                        console.log("found trips",found);
                         if (found) {
-                            trip = tempTrip;
-                            return;
+                            tripsArr.push(tempTrip)
+                            // trip = tempTrip;
+                            // return;
                         }
                     }
                 });
+                // console.log(tripsArr);
+                res.status(200).json(tripsArr);
+
                 //Matching logic END
-                if (trip == undefined || trip == null) {
+             /*    if (trip == undefined || trip == null) {
                     res.statusMessage = "No match found";
                     return res.status(400).end();
                 }
@@ -173,18 +183,80 @@ exports.ride = (req, res) => {
                             })
                             return res.status(500).end();
                         });
-                    })
+                    }) */
                     // .catch((e) => {
                     //     res.statusMessage = e.response.data.error_message;
                     //     return res.status(400).end();
                     // });
-            });
+            }).populate('driver').populate('riders')
         } else {
             res.statusMessage = "A trip is already active";
             return res.status(400).end();
         }
     })
 }
+
+exports.acceptRide = (req, res) => {
+  User.findById(req.auth._id, async (err, user) => {
+    if (user.active_trip) {
+      res.statusMessage = "A trip is already active";
+      return res.status(400).end();
+    } else {
+        console.log("myid", req.body.id);
+       const trip = await Trip.findById(req.body.id);
+
+      if (trip == undefined || trip == null) {
+        res.statusMessage = "No match found";
+        return res.status(400).end();
+      }
+      trip.waypoints = [...trip.waypoints, req.body.src, req.body.dst];
+      mapsClient
+        .directions({
+          params: {
+            origin: trip.source,
+            destination: trip.destination,
+            waypoints: trip.waypoints,
+            drivingOptions: {
+              departureTime: new Date(trip.dateTime), // for the time N milliseconds from now.
+            },
+            optimize: true,
+            key: process.env.MAPS_API_KEY,
+          },
+          timeout: 2000, // milliseconds
+        })
+        .then((r) => {
+          const routeArray = polylineUtil.decode(
+            r.data.routes[0].overview_polyline.points
+          );
+          trip.route = Object.values(routeArray).map((item) => ({
+            lat: item[0],
+            lng: item[1],
+          }));
+          trip.riders.push(user._id);
+          trip.available_riders = !(trip.riders.length === trip.max_riders);
+          trip.save((err, trip) => {
+            // if (err)
+            //     return res.status(500).end();
+            res.status(200).json(trip);
+            user.active_trip = trip._id;
+            user.trip_role_driver = false;
+            user.save((err) => {
+              // if (err) {
+              //     //TODO: revert
+              //     return res.status(500).end();
+              // }
+              return res;
+            });
+            return res.status(500).end();
+          });
+        });
+      // .catch((e) => {
+      //     res.statusMessage = e.response.data.error_message;
+      //     return res.status(400).end();
+      // });
+    }
+  });
+};
 
 exports.cancelTrip = (req, res) => {
     User.findById(req.auth._id, (err, user) => {
