@@ -160,6 +160,8 @@ export default function ActiveTrip({ setActiveTrip }) {
     const [datetime, setdatetime] = useState("")
     const [driver, setdriver] = useState(null)
     const [riders, setriders] = useState("")
+    const [car, setCar] = useState("")
+    const [vehicleNo, setVehicleNo] = useState("")
 
     useEffect(() => {
         fetch(process.env.REACT_APP_END_POINT + '/trip/activetrip', {
@@ -174,6 +176,8 @@ export default function ActiveTrip({ setActiveTrip }) {
             }
         }).then((responseJson) => {
             console.log(responseJson)
+            setCar(responseJson?.car);
+            setVehicleNo(responseJson?.vehicle_no);
             setWaypointsFn(responseJson.waypoints)
             setdatetime(getDateandTime(responseJson.dateTime))
             setdriver(responseJson.driver)
@@ -248,7 +252,9 @@ export default function ActiveTrip({ setActiveTrip }) {
                             <h3 style={{ marginTop: '1rem' }}><span className='trip-attributes'>Source</span>: {source}</h3>
                             <h3><span className='trip-attributes'>Destination</span>: {destination}</h3>
                             <h3><span className='trip-attributes'>Date</span>: {datetime}</h3>
-                            <h3 style={{ marginTop: '1rem' }}><span className='trip-attributes'>Driver</span>: {driver?.name}</h3>
+                            {vehicleNo && <h3><span className='trip-attributes'>Vehicle_no</span>: {vehicleNo}</h3>}
+                            {car && <h3><span className='trip-attributes'>Car</span>: {car}</h3>}
+                            <h3 style={{ marginTop: '1rem' }}><span className='trip-attributes'>Driver</span>: {driver?.name} ({driver?.gender})</h3>
                             <h3><span className='trip-attributes'>Rider(s)</span>: {riders || ''}</h3>
                             <h3><span className='trip-attributes'>Driver's phone</span>: 0{driver?.phone_number}</h3>
                         </Row>
