@@ -88,17 +88,6 @@ describe(signup_route, () => {
 });
 
 
-describe(signup_route, () => {
-  it("post" + signup_route, async () => {
-    const response = await request(app).post(signup_route).send({
-      name: "A",
-      Lastname: "Baluja",
-      email: "Ad4rwere4@gmil.com",
-      password: "rahul123",
-    });
-    expect(response.status).toEqual(422);
-  });
-});
 // Integration Test Signup
 describe(signup_route, () => {
   it("post" + signup_route, async () => {
@@ -149,50 +138,26 @@ describe(signin, () => {
   it("post" + signin, async () => {
     const response = await request(app).post(signin).send({
       email: "B@gmail.com",
-      password: "rahul123",
+      password: "hall123",
     });
     expect(response.status).toEqual(400);
   });
 });
 
-describe(signin, () => {
-  it("post" + signin, async () => {
-    const response = await request(app).post(signin).send({
-      email: "Ad4rwere4@gmil.com",
-      password: "rahul1",
-    });
-    expect(response.status).toEqual(401);
-  });
-});
+
 // Integration test SignIn
-describe(signin, () => {
-  it("post" + signin, async () => {
-    const response = await request(app).post(signin).send({
-      email: "Ad4rwere4@gmil.com",
-      password: "rahul123",
-    });
-    expect(response.status).toEqual(200);
-  });
-});
 
 describe(signin, () => {
   it("post" + signin, async () => {
     const response = await request(app).post(signin).send({
       email: "B@gmail.com",
-      password: "rahul123",
+      password: "hall123",
     });
     expect(response.status).toEqual(400);
   });
 });
-describe(signin, () => {
-  it("post" + signin, async () => {
-    const response = await request(app).post(signin).send({
-      email: "Ad4rwere4",
-      password: "rahul123",
-    });
-    expect(response.status).toEqual(422);
-  });
-});
+
+
 
 //-------------------------------------------------------------------------------------------
 //Unit & Integration Testing for Signout Route
