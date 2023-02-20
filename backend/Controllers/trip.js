@@ -39,7 +39,7 @@ exports.activeTrip = (req, res) => {
 
                         if (err)
                             return res.status(500).end();
-                        riderArray.push(String(user_rider.name + ' ' + user_rider.lastname));
+                        riderArray.push(String(user_rider.name + ' ' + user_rider.lastname + ' ' + `(${user_rider.gender})` ));
                         i++;
                         if (i == riders.length) {
                             return res.status(200).json({
@@ -67,6 +67,8 @@ exports.drive = (req, res) => {
                 route: req.body.route,
                 dateTime: new Date(req.body.dateTime),
                 max_riders: req.body.max_riders,
+                car: req.body?.car,
+                vehicle_no: req.body?.vehicle_no
             });
             tripObj.save((err, trip) => {
                 if (err) // TODO: ?Handle error coming due to not selecting all the required fields?
