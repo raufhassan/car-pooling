@@ -29,7 +29,7 @@ const TripCard = ({ driver, riders, tripId , handleAccept }) => (
 const TripModal = ({ show, setShow, trips, setActiveTrip, src, dst}) => {
   const handleClose = () => setShow(false);
 
-  console.log({trips});
+  
   const handleAccept = (tripId) => {
     // e.preventDefault();
 
@@ -54,7 +54,7 @@ const TripModal = ({ show, setShow, trips, setActiveTrip, src, dst}) => {
       })
       .catch((error) => {
         console.log(error);
-        // alert(error);
+        alert(error);
         // window.location.reload();
       });
 }
@@ -71,14 +71,11 @@ const TripModal = ({ show, setShow, trips, setActiveTrip, src, dst}) => {
             <TripCard driver={el.driver} riders={el.riders} tripId={el._id} handleAccept={handleAccept}/>
           ))}
         </Modal.Body>
-        {/*  <Modal.Footer>
+         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
             Close
           </Button>
-          <Button variant="primary" onClick={handleClose}>
-            Save Changes
-          </Button>
-        </Modal.Footer> */}
+        </Modal.Footer>
       </Modal>
     </>
   );
