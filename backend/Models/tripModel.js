@@ -2,8 +2,9 @@ const mongoose = require("mongoose");
 const schema = mongoose.Schema;
 const tripSchema = new schema({
     driver: {
-        type: mongoose.ObjectId,
-        require: true,
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'user'
     },    
     source: {
         type: Object,
@@ -33,13 +34,21 @@ const tripSchema = new schema({
         default: true
     },
     riders: {
-        type: Array,
+        type: [{ type: schema.Types.ObjectId, ref: "user" }],
         default: []
     },
     completed: {    // false: active
         type: Boolean,
         default: false
     },
+    car: {
+        type: String,
+        required: true,
+    },
+    vehicle_no: {
+        type: String,
+        required: true,
+    }
 }, { timestamps: true });
 
 module.exports = mongoose.model("trip", tripSchema)

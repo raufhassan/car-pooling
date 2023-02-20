@@ -41,13 +41,19 @@ const userSchema = new schema({
         require: true,
 
     },
+    gender: {
+        type: String,
+        enum: ["Male", "Female"],
+        default: 'Male'
+    },
     salt: String, // will store the encryption of password field
     user_photo: {
         data: Buffer,
         ContentType: String
     },
     trips: {
-        type: Array,
+        // type: Array,
+        type: [{ type: schema.Types.ObjectId, ref: "trip" }],
         default: []
     },
     active_trip: {
@@ -55,7 +61,8 @@ const userSchema = new schema({
         //default:null
     },
     trip_role_driver: {
-        type: Boolean
+        type: Boolean,
+        default: false
     }
 }, { timestamps: true });
 userSchema.virtual("password").set(function (password) {
